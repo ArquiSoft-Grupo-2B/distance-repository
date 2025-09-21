@@ -17,6 +17,9 @@ Servidor de rutas optimizado para **peatones en Colombia** usando datos de OpenS
 ### Comandos de Configuración
 
 ```bash
+# 0. Descargar datos de Colombia
+wget http://download.geofabrik.de/south-america/colombia-latest.osm.pbf
+
 # 1. Procesar datos (5-10 min)
 docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-extract -p /opt/foot.lua /data/colombia-latest.osm.pbf
 
