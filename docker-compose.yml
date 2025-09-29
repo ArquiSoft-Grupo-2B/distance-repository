@@ -1,0 +1,30 @@
+services:
+  osrm-colombia:
+    image: ghcr.io/project-osrm/osrm-backend:latest
+    container_name: osrm-colombia-server
+    ports:
+      - '5002:5000'
+    volumes:
+      - ./:/data
+      - ./init-osrm.sh:/init-osrm.sh
+    working_dir: /data
+    command: ['/bin/sh', '/init-osrm.sh']
+    environment:
+      - OSRM_ALGORITHM=mld
+      - OSRM_PROFILE=foot
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'curl',
+          '-f',
+          'http://localhost:5000/nearest/v1/walking/-74.0721,4.7110',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5m
+    labels:
+      - 'traefik.enable=false'
+      - 'description=Servidor OSRM para rutas peatonales en Colombia'

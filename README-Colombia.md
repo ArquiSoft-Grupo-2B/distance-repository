@@ -11,10 +11,54 @@ Servidor de rutas optimizado para **peatones en Colombia** usando datos de OpenS
 ### Prerrequisitos
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) instalado
-- Archivo `colombia-latest.osm.pbf`
+- [Docker Compose](https://docs.docker.com/compose/) (incluido con Docker Desktop)
 - 2GB RAM libre, 5GB espacio disco
 
-### Comandos de Configuración
+### 🎯 Inicio Rápido con Docker Compose
+
+```bash
+# ¡Solo un comando para todo!
+docker-compose up
+```
+
+**⏱️ Tiempo total:** ~8-15 minutos (automático)
+
+El servidor estará disponible en: `http://localhost:5002`
+
+### 📋 Comandos Útiles
+
+```bash
+# Iniciar en segundo plano
+docker-compose up -d
+
+# Ver logs en tiempo real
+docker-compose logs -f
+
+# Detener servidor
+docker-compose down
+
+# Reiniciar servidor
+docker-compose restart
+
+# Ver estado
+docker-compose ps
+```
+
+### 🛠️ Comandos con Makefile (Opcional)
+
+```bash
+make up      # Iniciar servidor
+make down    # Detener servidor
+make logs    # Ver logs
+make clean   # Limpiar datos procesados
+make test    # Probar conexión
+make help    # Ver todos los comandos
+```
+
+### ⚙️ Configuración Manual (Método Anterior)
+
+<details>
+<summary>Expandir para ver comandos manuales</summary>
 
 ```bash
 # 0. Descargar datos de Colombia
@@ -33,7 +77,7 @@ docker run -t -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-customize
 docker run -t -i -p 5002:5000 -v "${PWD}:/data" ghcr.io/project-osrm/osrm-backend osrm-routed --algorithm mld /data/colombia-latest.osrm
 ```
 
-**⏱️ Tiempo total:** ~8-15 minutos
+</details>
 
 ## 🚶 Uso del Servidor
 

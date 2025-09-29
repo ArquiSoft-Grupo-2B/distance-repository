@@ -1,0 +1,21 @@
+# Configuración local opcional para desarrollo
+# Copia este archivo como docker-compose.override.yml para personalizar
+
+services:
+  osrm-colombia:
+    # Descomenta para cambiar el puerto
+    # ports:
+    #   - "5003:5000"
+
+    # Descomenta para usar más memoria
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 4G
+    #     reservations:
+    #       memory: 2G
+
+    # Variables de entorno adicionales
+    # environment:
+    #   - OSRM_MAX_LOCATIONS_TRIP=25
+    #   - OSRM_MAX_LOCATIONS_VIAROUTE=25
