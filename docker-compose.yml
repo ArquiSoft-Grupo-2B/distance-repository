@@ -29,6 +29,6 @@ services:
       - 'traefik.enable=false'
       - 'description=Servidor OSRM para rutas peatonales en Colombia'
 networks:
-  default:
+  backend_net:
     external: true
     name: routes_shared_network
