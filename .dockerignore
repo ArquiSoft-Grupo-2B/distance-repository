@@ -1,2 +1,65 @@
-test
-build
+# ============================================================
+# .dockerignore para GOLDEN IMAGE
+# ============================================================
+# Solo incluimos archivos .osrm* y el script de inicio
+# Todo lo demás (source, docs, tests) se excluye para optimizar tamaño
+# ============================================================
+
+# Excluir código fuente (no necesario en runtime)
+src/
+include/
+lib/
+example/
+scripts/
+profiles/
+unit_tests/
+features/
+fuzz/
+test/
+third_party/
+cmake/
+generated/
+
+# Excluir archivos de build y desarrollo
+build/
+node_modules/
+Makefile
+CMakeLists.txt
+conanfile.py
+package*.json
+eslint.config.js
+cucumber.mjs
+
+# Excluir archivos de git
+.git/
+.github/
+.gitignore
+.gitattributes
+.gitmodules
+
+# Excluir documentación
+docs/
+README*.md
+CHANGELOG.md
+LICENSE.TXT
+CODE-OF-CONDUCT.md
+CONTRIBUTING.md
+Doxyfile.in
+taginfo.json
+
+# Excluir configs de desarrollo
+docker-compose*.yml
+.editorconfig
+.prettierrc
+
+# Excluir archivos Kubernetes (no van en imagen)
+k8s/
+
+# CRÍTICO: Excluir el .pbf original (muy pesado, ya tenemos .osrm)
+colombia-latest.osm.pbf
+
+# ============================================================
+# ARCHIVOS INCLUIDOS (lo que SÍ va en la imagen):
+# - colombia-latest.osrm* (todos los archivos procesados)
+# - init-osrm.sh (script de inicio)
+# ============================================================

@@ -1,38 +1,33 @@
 #!/bin/sh
+# ============================================================
+# GOLDEN IMAGE: Script simplificado sin procesamiento
+# ============================================================
+# Este script SOLO arranca el servidor OSRM.
+# Los archivos .osrm ya están procesados y copiados en la imagen.
+# ============================================================
+
 set -e
 
-DATA_FILE="/data/colombia-latest.osm.pbf"
 OSRM_FILE="/data/colombia-latest.osrm"
 
-echo "🚀 Iniciando configuración OSRM Colombia..."
+echo "═══════════════════════════════════════════════════════════"
+echo "🚀 OSRM Backend - Golden Image (Pre-procesado)"
+echo "═══════════════════════════════════════════════════════════"
 
-# Verificar si el archivo PBF existe
-if [ ! -f "$DATA_FILE" ]; then
-    echo "📥 Descargando datos de Colombia..."
-    wget -O "$DATA_FILE" http://download.geofabrik.de/south-america/colombia-latest.osm.pbf
-    echo "✅ Descarga completada"
-fi
-
-# Verificar si ya están procesados los datos
+# Verificar que los archivos .osrm existan (crítico)
 if [ ! -f "$OSRM_FILE" ]; then
-    echo "🔄 Procesando datos (5-10 min)..."
-    osrm-extract -p /opt/foot.lua "$DATA_FILE"
-    echo "✅ Extracción completada"
-    
-    echo "🔧 Particionando datos (1-2 min)..."
-    osrm-partition "$OSRM_FILE"
-    echo "✅ Partición completada"
-    
-    echo "⚙️ Personalizando datos (30 seg)..."
-    osrm-customize "$OSRM_FILE"
-    echo "✅ Personalización completada"
-else
-    echo "✅ Datos ya procesados, saltando pasos de preparación"
+    echo "❌ ERROR CRÍTICO: Archivos .osrm no encontrados en /data"
+    echo "   La imagen Golden no contiene mapas pre-procesados."
+    echo "   Verifica que 'COPY colombia-latest.osrm* /data/' funcionó."
+    exit 1
 fi
 
-echo "🌐 Iniciando servidor OSRM en puerto 5000..."
-echo "📍 URL disponible: http://localhost:5002"
+echo "✅ Archivos .osrm verificados en /data"
+echo "📊 Cargando mapas en memoria (~30-60 segundos)..."
+echo "🌐 Puerto: 5000 (interno)"
 echo "🚶 Perfil: Peatones (walking)"
+echo "🧮 Algoritmo: MLD (Multi-Level Dijkstra)"
+echo "═══════════════════════════════════════════════════════════"
 
-# Iniciar servidor
+# Iniciar servidor OSRM (sin procesamiento previo)
 exec osrm-routed --algorithm mld "$OSRM_FILE"

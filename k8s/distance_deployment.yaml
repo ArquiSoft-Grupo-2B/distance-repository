@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: distance-deployment
+  labels:
+    app: distance-app
+    component: osrm-backend
+spec:
+  replicas: 1  # Reducido a 1 por limitaciones de RAM en nodos
+  selector:
+    matchLabels:
+      app: distance-app
+  template:
+    metadata:
+      labels:
+        app: distance-app
+        component: osrm-backend
+    spec:
+      # Anti-affinity: Distribuir pods en nodos diferentes
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - distance-app
+              topologyKey: kubernetes.io/hostname
+      
+      containers:
+      - name: distance-container
+        image: us-central1-docker.pkg.dev/turnkey-cyclist-480023-j5/runpath-repo/distance-repository:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        
+        # ============================================================
+        # RECURSOS: Ajustado para nodos pequeños
+        # ============================================================
+        # OSRM carga ~2GB de archivos .osrm en memoria
+        resources:
+          requests:
+            memory: "1.5Gi"  # Reducido para nodos actuales
+            cpu: "300m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        
+        # ============================================================
+        # READINESS PROBE: ¿El pod está listo para recibir tráfico?
+        # ============================================================
+        # OSRM tarda 30-60s en cargar mapas en RAM
+        # initialDelaySeconds DEBE ser suficiente o el pod nunca arranca
+        readinessProbe:
+          httpGet:
+            path: /nearest/v1/walking/-74.0721,4.7110  # Bogotá Centro
+            port: 5000
+            scheme: HTTP
+          initialDelaySeconds: 60   # Espera 60s antes del primer check
+          periodSeconds: 10         # Chequea cada 10s
+          timeoutSeconds: 5         # Timeout por request
+          successThreshold: 1       # 1 éxito = pod Ready
+          failureThreshold: 3       # 3 fallos = pod Not Ready
+        
+        # ============================================================
+        # LIVENESS PROBE: ¿El pod está vivo o debe reiniciarse?
+        # ============================================================
+        livenessProbe:
+          httpGet:
+            path: /nearest/v1/walking/-74.0721,4.7110
+            port: 5000
+            scheme: HTTP
+          initialDelaySeconds: 120  # Espera 2min (arranque completo)
+          periodSeconds: 30         # Chequea cada 30s
+          timeoutSeconds: 10        # Timeout generoso
+          successThreshold: 1
+          failureThreshold: 3       # 3 fallos = reinicia pod

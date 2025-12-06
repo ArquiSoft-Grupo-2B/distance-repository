@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: distance-service  # DNS interno: http://distance-service:5000
+  labels:
+    app: distance-app
+    component: osrm-backend
+spec:
+  type: ClusterIP  # Solo accesible dentro del cluster (Service Discovery)
+  selector:
+    app: distance-app
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5000          # Puerto expuesto (mismo que interno para simplicidad)
+      targetPort: 5000    # Puerto del contenedor
+  sessionAffinity: None   # Round-robin entre pods
